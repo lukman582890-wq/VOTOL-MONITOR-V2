@@ -65,3 +65,7 @@ Therefore V2 must not invent parameter packets. It should first capture traffic 
 
 ## Safety gate
 Do not enable arbitrary parameter writes until a packet has been captured from a real controller and replay-tested with checksum validation. The application should keep a READ/capture-first workflow. WRITE is exposed only behind an explicit confirmation and must not be considered hardware-verified.
+
+
+## Page 1 voltage display scaling (EM-50 capture)
+For the user's EM-50 capture, the logical Page 1 block contains voltage thresholds as big-endian integer values in 0.1 V units. The captured values are `02 D5` = 725 (display 72.5 V), `02 2B` = 555 (display 55.5 V), and `02 0D` = 525 (display 52.5 V). The Android UI therefore displays these three fields divided by 10 and multiplies edited values by 10 before rebuilding the logical block. This scale is supported by the captured values and the VOTOL manuals' use of decimal-voltage thresholds; it is not a blanket assumption for other parameter fields.
