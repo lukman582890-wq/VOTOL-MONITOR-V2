@@ -54,4 +54,4 @@ jobs:
           TAG="build-${GITHUB_RUN_NUMBER}"
           gh release create "$TAG" "$APK"             --title "VOTOL Monitor V2 build ${GITHUB_RUN_NUMBER}"             --notes "Automatic debug APK build from ${GITHUB_SHA}"             --prerelease
 
-# Build source includes the latest parameter-scaling fixes.
+# Build source includes the latest live RPM decoding fix.
