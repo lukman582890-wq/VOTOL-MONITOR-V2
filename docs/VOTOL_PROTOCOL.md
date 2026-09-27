@@ -3,7 +3,7 @@
 Sources reviewed: community captures and open-source implementations found on GitHub.
 
 ## Transport
-- UART: 115200 baud.
+- Serial baud is interface/version dependent in public sources: 9600 and 115200 are both reported. The Android app currently uses the Bluetooth module transparently and therefore cannot change the module/controller UART baud from the app. If TX is visible but RX is empty, baud mismatch is a primary hardware-side suspect.
 - Controller response is a 24-byte frame beginning `C0 14 0D 59 42`.
 - Master request is a 24-byte frame beginning `C9 14 02 53 48 4F 57` for `SHOW`.
 
@@ -44,10 +44,24 @@ B20 bits:
 - bit 6: side stand
 - bit 7: regen
 
+
+## Parameter READ response framing
+A public capture shows `LDGET` returning seven 24-byte frames with the form:
+
+`C0 14 05 52 [page] [17-byte payload] [XOR] 0D`.
+
+For each frame, the application converts it to an 18-byte logical block:
+- logical byte 0 = page number (1..7)
+- logical bytes 1..17 = payload bytes B5..B21
+- physical B22 = XOR of physical B0..B21
+- physical B23 = `0D`
+
+This framing is important: treating the raw 24-byte parameter response as an 18-byte block causes the page fields to be parsed incorrectly.
+
 ## Parameter READ/WRITE status
-A complete, controller-version-independent parameter READ/WRITE map was **not** found in the reviewed sources. The `L DGET`/parameter exchange is only partially documented in an open-source implementation and is not sufficient to safely construct a generic writer.
+A complete, controller-version-independent parameter READ/WRITE map was **not** found in the reviewed sources. Public captures do establish the 24-byte LDGET response framing above, but field meanings and WRITE behavior can vary by controller generation. The app therefore treats the READ framing as a protocol implementation detail, while WRITE remains experimental and must be verified against the user's actual EM-50 before relying on it.
 
 Therefore V2 must not invent parameter packets. It should first capture traffic from the official VOTOL PC software while reading/writing one parameter at a time, then derive field offsets, packet type, length, and checksum.
 
 ## Safety gate
-Do not enable arbitrary parameter writes until a packet has been captured from a real controller and replay-tested with checksum validation. The application should keep a READ-only/capture mode by default.
+Do not enable arbitrary parameter writes until a packet has been captured from a real controller and replay-tested with checksum validation. The application should keep a READ/capture-first workflow. WRITE is exposed only behind an explicit confirmation and must not be considered hardware-verified.
