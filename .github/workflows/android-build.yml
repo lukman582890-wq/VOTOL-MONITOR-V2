@@ -5,6 +5,13 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,8 +31,16 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
+      - name: Verify APK exists
+        run: |
+          set -e
+          ls -lah app/build/outputs/apk/debug/
+          test -n "$(find app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: VOTOL-MONITOR-V2-debug
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
