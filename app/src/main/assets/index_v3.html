@@ -29,6 +29,7 @@ function parseParam(a){let n=a[0];if(n<1||n>7)return;params[n]=a;paramCount++;di
 function hex(a){return a.map(x=>x.toString(16).padStart(2,'0')).join(' ')}
 function writeAck(p){if(p[0]===192&&p[1]===20&&p[2]===13&&p[3]===80){lg('WRITE ACK: '+hex(p));return true}return false}
 function rx(a){
+ rxBytes+=a.length;diag();
  buf.push(...a);
  while(buf.length){
   if(buf.length>=4&&buf[0]==192&&buf[1]==20){
@@ -48,5 +49,5 @@ function rx(a){
   buf.shift();
  }
 }
-window.votolNativeEvent=(t,v)=>{if(t==='classicConnected'){connected=true;E('status').textContent='Bluetooth Classic: '+v;lg('CONNECTED '+v);setTimeout(()=>testComm(),500)}else if(t==='classicTx')lg('TX '+v);else if(t==='classicRx'){lg('RX '+v);rx(v.split(/\\s+/).filter(Boolean).map(x=>parseInt(x,16)))}else if(t==='classicError'){E('status').textContent='ERROR: '+v;lg('ERROR '+v)}else if(t==='classicInfo'){lg(v);alert('Log berhasil diexport')}else if(t==='classicDisconnected'){connected=false;stopLive();E('status').textContent='Terputus';lg('DISCONNECTED');diag()}};
+window.votolNativeEvent=(t,v)=>{if(t==='classicConnected'){connected=true;E('status').textContent='Bluetooth Classic: '+v;lg('CONNECTED '+v);setTimeout(()=>testComm(),500)}else if(t==='classicTx')lg('TX '+v);else if(t==='classicRx'){lg('RX '+v);rx(v.split(/\s+/).filter(Boolean).map(x=>parseInt(x,16)))}else if(t==='classicError'){E('status').textContent='ERROR: '+v;lg('ERROR '+v)}else if(t==='classicInfo'){lg(v);alert('Log berhasil diexport')}else if(t==='classicDisconnected'){connected=false;stopLive();E('status').textContent='Terputus';lg('DISCONNECTED');diag()}};
 </script></body></html>
