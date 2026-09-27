@@ -47,5 +47,5 @@ function rx(a){
   buf.shift();
  }
 }
-window.votolNativeEvent=(t,v)=>{if(t==='classicConnected'){connected=true;E('status').textContent='Bluetooth Classic: '+v;lg('CONNECTED '+v)}else if(t==='classicTx')lg('TX '+v);else if(t==='classicRx'){lg('RX '+v);rx(v.split(/\\s+/).filter(Boolean).map(x=>parseInt(x,16)))}else if(t==='classicError'){E('status').textContent='ERROR: '+v;lg('ERROR '+v)}else if(t==='classicDisconnected'){connected=false;stopLive();E('status').textContent='Terputus';lg('DISCONNECTED');diag()}};
+window.votolNativeEvent=(t,v)=>{if(t==='classicConnected'){connected=true;E('status').textContent='Bluetooth Classic: '+v;lg('CONNECTED '+v);setTimeout(()=>testComm(),500)}else if(t==='classicTx')lg('TX '+v);else if(t==='classicRx'){lg('RX '+v);rx(v.split(/\\s+/).filter(Boolean).map(x=>parseInt(x,16)))}else if(t==='classicError'){E('status').textContent='ERROR: '+v;lg('ERROR '+v)}else if(t==='classicDisconnected'){connected=false;stopLive();E('status').textContent='Terputus';lg('DISCONNECTED');diag()}};
 </script></body></html>
