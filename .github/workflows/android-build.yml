@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-apk-build-${{ github.ref }}
@@ -37,10 +37,19 @@ jobs:
           ls -lah app/build/outputs/apk/debug/
           test -n "$(find app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)"
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: VOTOL-MONITOR-V2-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish APK release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          APK=$(find app/build/outputs/apk/debug -maxdepth 1 -name '*.apk' -print -quit)
+          TAG="build-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" "$APK"             --title "VOTOL Monitor V2 build ${GITHUB_RUN_NUMBER}"             --notes "Automatic debug APK build from ${GITHUB_SHA}"             --prerelease
