@@ -1,1 +1,4 @@
-plugins { id 'com.android.application' }\nandroid { namespace 'com.votol.configurator'; compileSdk 35\n defaultConfig { applicationId 'com.votol.configurator'; minSdk 23; targetSdk 35; versionCode 2; versionName '2.0' }\n}
+plugins { id 'com.android.application' }
+android { namespace 'com.votol.configurator'; compileSdk 35
+ defaultConfig { applicationId 'com.votol.configurator'; minSdk 23; targetSdk 35; versionCode 2; versionName '2.0' }
+}
